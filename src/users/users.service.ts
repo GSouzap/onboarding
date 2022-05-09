@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EntityNotFoundError } from 'src/common/errors';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
@@ -13,7 +14,6 @@ export class UsersService {
   ){}
 
   async create(createUserDto: CreateUserDto): Promise<UserEntity> {
-    console.log(createUserDto)
     const { cpf, email, firstName, lastName, password } = createUserDto
 
     const user = new UserEntity()
@@ -41,7 +41,7 @@ export class UsersService {
     const user = await this.userRepo.findOne(id)
 
     if(!user){
-      throw new Error('This user does not exists')
+      throw new EntityNotFoundError('user')
     }
 
     const { cpf, email, firstName, lastName, password } = updateUserDto
@@ -61,7 +61,7 @@ export class UsersService {
     const user = await this.userRepo.findOne(id)
 
     if(!user) {
-      throw new Error('This product does not exists')
+      throw new EntityNotFoundError('product')
     }
 
     user.deletedAt = new Date(new Date().toUTCString())

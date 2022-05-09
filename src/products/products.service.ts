@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { EntityNotFoundError } from 'src/common/errors';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -19,7 +20,7 @@ export class ProductsService {
     const user = await this.userSvc.getPUsersOrUserById(id)
 
     if(!user){
-      throw new Error('This user does not exists')
+      throw new EntityNotFoundError('user')
     }
 
     const { price, productDescription, productImage } = createProductDto
@@ -48,7 +49,7 @@ export class ProductsService {
     const product = await this.productRepo.findOne(id)
 
     if(!product){
-      throw new Error('This product does not exists')
+      throw new EntityNotFoundError('product')
     }
 
     const { price, productDescription, productImage } = updateProductDto
@@ -66,7 +67,7 @@ export class ProductsService {
     const haveProduct = await this.productRepo.findOne(id)
 
     if(!haveProduct) {
-      throw new Error('This product does not exists')
+      throw new EntityNotFoundError('product')
     }
 
     return await this.productRepo.delete(id)
@@ -75,4 +76,6 @@ export class ProductsService {
   async getProductsByUserId(userId: string): Promise<ProductEntity[]> {
     return await this.productRepo.getProductByUserId(userId)
   }
+
+
 }
