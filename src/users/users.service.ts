@@ -1,33 +1,71 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserEntity } from './entities/user.entity';
 import { UserRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly userRepo: UserRepository
+    @InjectRepository(UserRepository)
+    private userRepo: UserRepository,
   ){}
 
-  create(createUserDto: CreateUserDto) {
-    const response = this.userRepo.createUser(createUserDto)
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+    console.log(createUserDto)
+    const { cpf, email, firstName, lastName, password } = createUserDto
+
+    const user = new UserEntity()
+    user.cpf = cpf
+    user.email = email
+    user.firstName = firstName
+    user.lastName = lastName
+    user.password = password
+
+    const response = await this.userRepo.save(user)
 
     return response
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async getPUsersOrUserById(id?: string): Promise<UserEntity | UserEntity[]> {
+    if(id){
+      const response = await this.userRepo.findOneOrFail(id)
+      return response
+    }
+    const response = await this.userRepo.find()
+    return response
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
+    const user = await this.userRepo.findOne(id)
+
+    if(!user){
+      throw new Error('This user does not exists')
+    }
+
+    const { cpf, email, firstName, lastName, password } = updateUserDto
+
+    user.cpf = cpf === undefined ? user.cpf : cpf
+    user.email = email === undefined ? user.email : email
+    user.firstName = firstName === undefined ? user.firstName : firstName
+    user.lastName = lastName === undefined ? user.lastName : lastName
+    user.password = password === undefined ? user.password : password
+
+    const response = await this.userRepo.save(user)
+
+    return response 
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async remove(id: string): Promise<any> {
+    const user = await this.userRepo.findOne(id)
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    if(!user) {
+      throw new Error('This product does not exists')
+    }
+
+    user.deletedAt = new Date(new Date().toUTCString())
+
+    return await this.userRepo.save(user)
   }
 }

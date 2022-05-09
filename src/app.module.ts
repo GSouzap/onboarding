@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config'
-import { typeOrmConfig } from './config';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 
@@ -22,7 +20,8 @@ import { ProductsModule } from './products/products.module';
       },
     }),
     UsersModule,
-    ProductsModule],
+    ProductsModule
+  ],
   controllers: [],
   providers: [],
 })

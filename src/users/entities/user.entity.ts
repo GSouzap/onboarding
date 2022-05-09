@@ -1,24 +1,22 @@
+import { BaseEntity } from 'src/common/entities/base.entity'
 import { ProductEntity } from 'src/products/entities/product.entity'
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity('user')
-export class UserEntity {
-  @PrimaryGeneratedColumn('uuid', { name: 'id' })
-  id: string
-
-  @Column('uuid', { name: 'first_name' })
+export class UserEntity extends BaseEntity{
+  @Column('character varying', { name: 'first_name' })
   firstName: string
 
-  @Column('uuid', { name: 'last_name' })
+  @Column('character varying', { name: 'last_name' })
   lastName: string
 
-  @Column('uuid', { name: 'cpf' })
+  @Column('character varying', { name: 'cpf' })
   cpf: string
 
-  @Column('uuid', { name: 'email' })
+  @Column('character varying', { name: 'email' })
   email: string
 
-  @Column('uuid', { name: 'password' })
+  @Column('character varying', { name: 'password' })
   password: string
 
   @OneToMany(() => ProductEntity, (product) => product.user)
